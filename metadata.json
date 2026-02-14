@@ -1,0 +1,7 @@
+{
+  "name": "Se Libre - Línea de Luz Interna",
+  "description": "Gestión de inventario y ventas para Se Libre. Transformación y luz en tu negocio.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
