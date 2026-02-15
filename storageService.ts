@@ -1,12 +1,14 @@
 
-import { StockItem, Sale, ManualMovement } from '../types';
+import { StockItem, Sale, ManualMovement } from './types';
+import { getLocalDateISO } from './dateUtils';
 
 const KEYS = {
   STOCK: 'selibre_stock',
   SALES: 'selibre_sales',
   MOVEMENTS: 'selibre_manual_movements',
   BALANCES: 'selibre_initial_balances',
-  DAILY: 'selibre_daily_registry'
+  DAILY: 'selibre_daily_registry',
+  CLOSED_DAYS: 'selibre_closed_days'
 };
 
 export const storageService = {
@@ -40,9 +42,17 @@ export const storageService = {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `SeLibre_Respaldo_${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `SeLibre_Respaldo_${getLocalDateISO()}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  },
+
+
+  clearAppData() {
+    Object.values(KEYS).forEach((key) => localStorage.removeItem(key));
+    localStorage.removeItem('selibre_auth');
+    localStorage.removeItem('selibre_role');
+    localStorage.removeItem('selibre_user_name');
   },
 
   async importDatabase(file: File): Promise<boolean> {

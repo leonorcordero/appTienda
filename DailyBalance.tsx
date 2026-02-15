@@ -1,7 +1,8 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { Sale, StockItem, PaymentMethod, ManualMovement } from '../types';
-import { ICONS } from '../constants';
+import { Sale, StockItem, PaymentMethod, ManualMovement } from './types';
+import { ICONS } from './constants';
+import { getLocalDateISO } from './dateUtils';
 
 interface DailyBalanceProps {
   sales: Sale[];
@@ -17,7 +18,7 @@ const DailyBalance: React.FC<DailyBalanceProps> = ({ sales, stock, manualMovemen
   const [showSummary, setShowSummary] = useState(false);
   const [isClosed, setIsClosed] = useState(false);
   
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalDateISO();
   
   useEffect(() => {
     const closedDays = JSON.parse(localStorage.getItem('selibre_closed_days') || '{}');

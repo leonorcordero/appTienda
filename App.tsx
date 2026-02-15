@@ -1,21 +1,21 @@
 
 import React, { useState, useEffect } from 'react';
-import { AppView, StockItem, Sale, ManualMovement, UserRole, PaymentMethod, DebtStatus } from './types';
+import { AppView, StockItem, Sale, ManualMovement } from './types';
 import { ICONS } from './constants';
-import DailyBalance from './components/DailyBalance';
-import StockManagement from './components/StockManagement';
-import SalesManagement from './components/SalesManagement';
-import AdministrativeReport from './components/AdministrativeReport';
-import Movements from './components/Movements';
-import Statistics from './components/Statistics';
-import Login from './components/Login';
-import { storageService } from './services/storageService';
+import DailyBalance from './DailyBalance';
+import StockManagement from './StockManagement';
+import SalesManagement from './SalesManagement';
+import AdministrativeReport from './AdministrativeReport';
+import Movements from './Movements';
+import Statistics from './Statistics';
+import Login from './Login';
+import { storageService } from './storageService';
+import { getLocalDateISO } from './dateUtils';
+import { useSession } from './useSession';
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeView, setActiveView] = useState<AppView>('home');
-  const [role, setRole] = useState<UserRole>('seller');
-  const [userName, setUserName] = useState('');
+  const { isAuthenticated, role, userName, login, logout } = useSession();
   
   const [stock, setStock] = useState<StockItem[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
@@ -30,13 +30,6 @@ const App: React.FC = () => {
       setManualMovements(data.movements);
       setInitialBalances(data.balances);
 
-      const savedRole = localStorage.getItem('selibre_role') as UserRole;
-      const savedUserName = localStorage.getItem('selibre_user_name');
-      const savedAuth = localStorage.getItem('selibre_auth') === 'true';
-
-      if (savedRole) setRole(savedRole);
-      if (savedUserName) setUserName(savedUserName);
-      if (savedAuth) setIsAuthenticated(true);
     };
     loadData();
   }, []);
@@ -47,16 +40,9 @@ const App: React.FC = () => {
     }
   }, [stock, sales, manualMovements, isAuthenticated]);
 
-  const handleLogin = (userRole: UserRole, name: string) => {
-    setRole(userRole);
-    setUserName(name);
-    setIsAuthenticated(true);
-  };
+  const handleLogin = login;
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('selibre_auth');
-  };
+  const handleLogout = logout;
 
   const addStockItem = (item: StockItem) => setStock(prev => [...prev, item]);
   const updateStockItem = (updatedItem: StockItem) => setStock(prev => prev.map(item => item.id === updatedItem.id ? updatedItem : item));
@@ -76,8 +62,8 @@ const App: React.FC = () => {
           quantity: newQty,
           movementHistory: [...(item.movementHistory || []), {
             id: crypto.randomUUID(),
-            date: new Date().toISOString().split('T')[0],
-            type: diff < 0 ? 'extraction' : 'entry' as any,
+            date: getLocalDateISO(),
+            type: diff < 0 ? 'extraction' : 'entry',
             quantityChange: diff,
             reason: diff < 0 ? 'Venta registrada' : 'Devolución/Ajuste'
           }]

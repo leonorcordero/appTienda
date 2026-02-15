@@ -1,7 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { Sale, StockItem, PaymentMethod, DebtStatus, SalePayment } from '../types';
-import { ICONS } from '../constants';
+import { Sale, StockItem, PaymentMethod, DebtStatus, SalePayment } from './types';
+import { ICONS } from './constants';
+import { getLocalDateISO } from './dateUtils';
+import { getAvailableStockForSale, validateSaleDraft } from './salesValidation';
 
 interface SalesManagementProps {
   sales: Sale[];
@@ -27,7 +29,7 @@ const SalesManagement: React.FC<SalesManagementProps> = ({ sales, stock, onAdd, 
     payments: [{ method: PaymentMethod.CASH, amount: 0 }] as SalePayment[],
     debtStatus: DebtStatus.NONE,
     debtAmount: 0,
-    date: new Date().toISOString().split('T')[0],
+    date: getLocalDateISO(),
     observations: ''
   });
 
@@ -56,6 +58,23 @@ const SalesManagement: React.FC<SalesManagementProps> = ({ sales, stock, onAdd, 
       }));
     }
   }, [formData.unitPrice, formData.quantity, formData.debtAmount, isSplitPayment]);
+
+
+  const getAvailableStock = (productCode: string) => (
+    getAvailableStockForSale(stock, sales, editingSaleId, productCode)
+  );
+
+  const validateSale = () => {
+    const availableStock = getAvailableStock(formData.productCode);
+    const validationError = validateSaleDraft(formData, availableStock);
+
+    if (validationError) {
+      alert(validationError);
+      return false;
+    }
+
+    return true;
+  };
 
   const handleEdit = (sale: Sale) => {
     setEditingSaleId(sale.id);
@@ -90,17 +109,14 @@ const SalesManagement: React.FC<SalesManagementProps> = ({ sales, stock, onAdd, 
       payments: [{ method: PaymentMethod.CASH, amount: 0 }],
       debtStatus: DebtStatus.NONE,
       debtAmount: 0,
-      date: new Date().toISOString().split('T')[0],
+      date: getLocalDateISO(),
       observations: ''
     });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.productCode) {
-      alert("Ingrese un código válido.");
-      return;
-    }
+    if (!validateSale()) return;
 
     const saleData: Sale = {
       ...formData,
@@ -201,7 +217,7 @@ const SalesManagement: React.FC<SalesManagementProps> = ({ sales, stock, onAdd, 
                     <div className="mt-2 px-4 py-3 bg-emerald-50 text-emerald-700 text-[11px] font-bold rounded-xl border border-emerald-100 flex flex-col gap-1 animate-in fade-in zoom-in duration-200">
                       <div className="flex justify-between border-b border-emerald-100/50 pb-1 mb-1">
                         <span>✓ {foundItem.name}</span>
-                        <span>Disp: {foundItem.quantity}</span>
+                        <span>Disp: {getAvailableStock(foundItem.code)}</span>
                       </div>
                       <div className="text-[9px] uppercase tracking-wider text-emerald-600/70">
                         Consignante: <span className="text-emerald-800">{foundItem.consignee || 'Propio'}</span>

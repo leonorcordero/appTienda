@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LayoutDashboard, Package, ShoppingCart, MessageSquare, Plus, Search, Trash2, TrendingUp, DollarSign, Clock, Pencil, FileText, History, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Plus, Search, Trash2, TrendingUp, DollarSign, Clock, Pencil, FileText, History, BarChart3 } from 'lucide-react';
 
 // Custom Dragonfly Icon (Libélula)
 export const DragonflyIcon = ({ size = 20 }: { size?: number }) => (
@@ -27,7 +27,6 @@ export const ICONS = {
   Dashboard: <LayoutDashboard size={20} />,
   Stock: <Package size={20} />,
   Sales: <ShoppingCart size={20} />,
-  Assistant: <MessageSquare size={20} />,
   Reports: <FileText size={20} />,
   Movements: <History size={20} />,
   Stats: <BarChart3 size={20} />,

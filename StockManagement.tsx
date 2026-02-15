@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { StockItem, StockMovement, UserRole } from '../types';
-import { ICONS } from '../constants';
+import { StockItem, StockMovement, UserRole } from './types';
+import { ICONS } from './constants';
+import { getLocalDateISO } from './dateUtils';
 
 interface StockManagementProps {
   stock: StockItem[];
@@ -30,7 +31,7 @@ const StockManagement: React.FC<StockManagementProps> = ({ stock, onAdd, onUpdat
     costValue: 0,
     salePrice: 0,
     consignee: '',
-    purchaseDate: new Date().toISOString().split('T')[0]
+    purchaseDate: getLocalDateISO()
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -61,7 +62,7 @@ const StockManagement: React.FC<StockManagementProps> = ({ stock, onAdd, onUpdat
     
     const { item, type } = adjustItem;
     const finalQtyChange = type === 'entry' ? qtyToChange : -qtyToChange;
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateISO();
     
     const newMovement: StockMovement = {
       id: crypto.randomUUID(),
@@ -98,7 +99,7 @@ const StockManagement: React.FC<StockManagementProps> = ({ stock, onAdd, onUpdat
       costValue: 0,
       salePrice: 0,
       consignee: '',
-      purchaseDate: new Date().toISOString().split('T')[0]
+      purchaseDate: getLocalDateISO()
     });
   };
 
@@ -108,8 +109,23 @@ const StockManagement: React.FC<StockManagementProps> = ({ stock, onAdd, onUpdat
     item.category.toLowerCase().includes(search.toLowerCase())
   );
 
+  const LOW_STOCK_THRESHOLD = 3;
+  const lowStockItems = filteredStock.filter(item => item.quantity <= LOW_STOCK_THRESHOLD);
+
   return (
     <div className="space-y-6">
+      {lowStockItems.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 flex items-start gap-3">
+          <div className="text-amber-600 mt-0.5">{ICONS.Pending}</div>
+          <div>
+            <p className="text-xs font-black text-amber-700 uppercase tracking-widest">Alerta de stock bajo</p>
+            <p className="text-sm font-bold text-amber-800">
+              {lowStockItems.length} producto(s) con {LOW_STOCK_THRESHOLD} o menos unidades.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row items-center gap-4">
         <div className="relative flex-1 w-full">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">{ICONS.Search}</span>
@@ -144,11 +160,16 @@ const StockManagement: React.FC<StockManagementProps> = ({ stock, onAdd, onUpdat
                 </div>
                 <h4 className="font-black text-slate-800 text-lg leading-tight uppercase">{item.name}</h4>
                 <p className="text-[10px] font-bold text-slate-400 uppercase italic">Consignante: {item.consignee || 'Propio'}</p>
+                {item.quantity <= LOW_STOCK_THRESHOLD && (
+                  <span className="text-[9px] font-black text-orange-600 bg-orange-50 px-2 py-1 rounded-lg uppercase tracking-widest w-fit">
+                    Reponer pronto
+                  </span>
+                )}
               </div>
 
               <div className="text-right">
                 <span className="text-[9px] font-black text-slate-300 block uppercase mb-1">Stock</span>
-                <span className={`text-3xl font-black leading-none ${item.quantity < 5 ? 'text-orange-500' : 'text-slate-800'}`}>
+                <span className={`text-3xl font-black leading-none ${item.quantity <= LOW_STOCK_THRESHOLD ? 'text-orange-500' : 'text-slate-800'}`}>
                   {item.quantity}
                 </span>
               </div>

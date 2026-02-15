@@ -1,7 +1,7 @@
 
 import React, { useMemo } from 'react';
-import { StockItem, Sale } from '../types';
-import { ICONS } from '../constants';
+import { StockItem, Sale } from './types';
+import { ICONS } from './constants';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend } from 'recharts';
 
 interface StatisticsProps {

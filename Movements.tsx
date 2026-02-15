@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Sale, ManualMovement, ManualMovementCategory, PaymentMethod } from '../types';
-import { ICONS } from '../constants';
+import { Sale, ManualMovement, ManualMovementCategory, PaymentMethod } from './types';
+import { ICONS } from './constants';
+import { getLocalDateISO } from './dateUtils';
 
 interface MovementsProps {
   sales: Sale[];
@@ -16,7 +17,7 @@ const Movements: React.FC<MovementsProps> = ({ sales, manualMovements, onAddManu
     category: '' as ManualMovementCategory,
     amount: 0,
     description: '',
-    date: new Date().toISOString().split('T')[0],
+    date: getLocalDateISO(),
     paymentMethod: PaymentMethod.CASH
   });
 
@@ -51,7 +52,7 @@ const Movements: React.FC<MovementsProps> = ({ sales, manualMovements, onAddManu
       category: '' as ManualMovementCategory,
       amount: 0,
       description: '',
-      date: new Date().toISOString().split('T')[0],
+      date: getLocalDateISO(),
       paymentMethod: PaymentMethod.CASH
     });
     setShowAdd(null);
