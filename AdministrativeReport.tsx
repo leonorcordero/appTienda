@@ -1,8 +1,8 @@
 
 import React, { useMemo, useRef } from 'react';
-import { StockItem, Sale, DebtStatus, ManualMovement, ManualMovementCategory, PaymentMethod } from '../types';
-import { ICONS } from '../constants';
-import { storageService } from '../services/storageService';
+import { StockItem, Sale, DebtStatus, ManualMovement, ManualMovementCategory, PaymentMethod } from './types';
+import { ICONS } from './constants';
+import { storageService } from './storageService';
 
 interface InitialBalances {
   bank: number;
@@ -80,7 +80,7 @@ const AdministrativeReport: React.FC<AdministrativeReportProps> = ({
   const clearDatabase = () => {
     if (window.confirm("⚠️ ATENCIÓN: Se borrarán todas las ventas y el stock. ¿Continuar?")) {
       if (window.confirm("❌ ESTA ACCIÓN NO SE PUEDE DESHACER. ¿Estás TOTALMENTE seguro?")) {
-        localStorage.clear();
+        storageService.clearAppData();
         window.location.reload();
       }
     }
