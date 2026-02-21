@@ -52,7 +52,7 @@ Desde la raíz del repositorio ejecuta:
 ```bash
 bash sadhana/scripts/prepare_download_folder.sh
 ```
-Esto crea la carpeta `sadhana_descarga/` (con todos los archivos del proyecto en un solo lugar).
+Esto crea una carpeta `sadhana/` fuera del repositorio (con todos los archivos del proyecto en un solo lugar).
 
 Si quieres otro destino:
 ```bash
